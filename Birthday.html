@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Birthday Message</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #f8f5f2 0%, #fefefe 50%, #f5f2f0 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #5a4a42;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page {
+            display: none;
+            min-height: 100vh;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+            position: relative;
+        }
+
+        .page.active {
+            display: flex;
+        }
+
+        .heartbeat-indicator {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+            max-width: 90%;
+            overflow-x: auto;
+            padding: 0 10px;
+        }
+
+        .heart-dot {
+            width: 8px;
+            height: 8px;
+            background: #c67b9b;
+            border-radius: 50%;
+            opacity: 0.4;
+            transition: all 0.8s ease;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .heart-dot.active {
+            opacity: 1;
+            background: #8b4a6b;
+            animation: heartPulse 2s ease-in-out infinite;
+        }
+
+        .heart-dot.active::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #8b4a6b, #c67b9b);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.6;
+            animation: heartGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes heartPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        @keyframes heartGlow {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.8); opacity: 0.2; }
+        }
+
+        .message {
+            text-align: center;
+            font-size: 26px;
+            color: #8b4a6b;
+            opacity: 0;
+            animation: breatheIn 2s ease-out 1s forwards;
+            font-weight: 300;
+            letter-spacing: 0.8px;
+            padding: 0 20px;
+            max-width: 85%;
+            line-height: 1.6;
+            position: relative;
+            font-style: italic;
+        }
+
+        .message::before {
+            content: '"';
+            font-size: 60px;
+            position: absolute;
+            top: -20px;
+            left: -10px;
+            color: rgba(139, 74, 107, 0.2);
+            font-family: serif;
+        }
+
+        .message::after {
+            content: '"';
+            font-size: 60px;
+            position: absolute;
+            bottom: -30px;
+            right: -10px;
+            color: rgba(139, 74, 107, 0.2);
+            font-family: serif;
+        }
+
+        .intro-message {
+            text-align: center;
+            font-size: 32px;
+            color: #8b4a6b;
+            opacity: 0;
+            animation: breatheIn 2s ease-out 1s forwards;
+            font-weight: 400;
+            letter-spacing: 1px;
+            padding: 0 20px;
+            max-width: 90%;
+            line-height: 1.4;
+            position: relative;
+            font-style: italic;
+        }
+
+        .intro-subtext {
+            font-size: 18px;
+            color: rgba(139, 74, 107, 0.8);
+            margin-top: 30px;
+            opacity: 0;
+            animation: breatheIn 2s ease-out 2s forwards;
+            font-style: italic;
+        }
+
+        .number-indicator {
+            position: absolute;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+            color: rgba(139, 74, 107, 0.6);
+            font-weight: 300;
+            opacity: 0;
+            animation: breatheIn 1.5s ease-out 0.5s forwards;
+        }
+
+        @keyframes breatheIn {
+            0% { opacity: 0; transform: translateY(30px) scale(0.9); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .touch-invitation {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+            color: rgba(139, 74, 107, 0.7);
+            opacity: 0;
+            animation: gentleInvite 2s ease-out 3s forwards;
+            font-style: italic;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .touch-invitation:hover {
+            color: #8b4a6b;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        @keyframes gentleInvite {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        .birthday-page {
+            background: linear-gradient(135deg, #8b4a6b 0%, #a85c7a 50%, #c67b9b 100%);
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .birthday-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1), transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1), transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255,255,255,0.05), transparent 50%);
+            pointer-events: none;
+        }
+
+        .birthday-title {
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 400;
+            margin-bottom: 30px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            animation: titleBloom 2.5s cubic-bezier(0.23, 1, 0.32, 1);
+            background: linear-gradient(45deg, #fff, #f8f5f2, #fff, #f8f5f2);
+            background-size: 400% 400%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleBloom 2.5s ease-out, shimmer 4s ease-in-out infinite 2.5s;
+            letter-spacing: 3px;
+            font-style: italic;
+        }
+
+        @keyframes titleBloom {
+            0% { 
+                opacity: 0; 
+                transform: scale(0.3) rotateY(90deg);
+                filter: blur(10px);
+            }
+            100% { 
+                opacity: 1; 
+                transform: scale(1) rotateY(0deg);
+                filter: blur(0px);
+            }
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .birthday-subtitle {
+            font-size: 22px;
+            margin-bottom: 50px;
+            opacity: 0;
+            animation: subtitleGlow 1.5s ease-out 1.5s forwards;
+            font-weight: 300;
+            letter-spacing: 1px;
+            line-height: 1.5;
+            font-style: italic;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        @keyframes subtitleGlow {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .letter-invitation {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 20px 40px;
+            font-size: 18px;
+            font-family: 'Georgia', serif;
+            border-radius: 60px;
+            cursor: pointer;
+            backdrop-filter: blur(20px);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            font-style: italic;
+            letter-spacing: 0.5px;
+            opacity: 0;
+            animation: invitationAppear 1s ease-out 3s forwards;
+        }
+
+        .letter-invitation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .letter-invitation:hover::before {
+            left: 100%;
+        }
+
+        .letter-invitation:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        @keyframes invitationAppear {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .letter-container {
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 50px 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.1),
+                0 8px 20px rgba(139, 74, 107, 0.1);
+            color: #5a4a42;
+            line-height: 1.9;
+            font-size: 17px;
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow-y: auto;
+            max-height: 85vh;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .letter-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #8b4a6b, #c67b9b, #8b4a6b);
+            border-radius: 30px 30px 0 0;
+        }
+
+        .letter-line {
+            opacity: 0;
+            margin-bottom: 28px;
+            transform: translateY(20px);
+            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .letter-line.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .letter-line.greeting {
+            font-size: 24px;
+            font-weight: 500;
+            color: #8b4a6b;
+            margin-bottom: 35px;
+            text-align: center;
+        }
+
+        .letter-line.signature {
+            text-align: right;
+            margin-top: 50px;
+            font-style: italic;
+            color: #8b4a6b;
+            font-size: 20px;
+            font-weight: 400;
+            position: relative;
+        }
+
+        .letter-line.signature::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: 0;
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #8b4a6b);
+        }
+
+        .emotional-text {
+            font-style: italic;
+            color: #8b4a6b;
+            font-weight: 500;
+            position: relative;
+            padding: 2px 0;
+            background: linear-gradient(120deg, transparent 0%, rgba(139, 74, 107, 0.08) 50%, transparent 100%);
+            border-radius: 3px;
+        }
+
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 18px;
+            color: rgba(139, 74, 107, 0.3);
+            animation: heartDance 12s ease-in-out infinite;
+        }
+
+        @keyframes heartDance {
+            0% { 
+                transform: translateY(100vh) rotate(0deg) scale(0.5); 
+                opacity: 0; 
+            }
+            10% { opacity: 0.8; }
+            20% { transform: translateY(80vh) rotate(45deg) scale(0.8); }
+            40% { transform: translateY(60vh) rotate(90deg) scale(1); }
+            60% { transform: translateY(40vh) rotate(135deg) scale(1.1); }
+            80% { transform: translateY(20vh) rotate(180deg) scale(0.9); }
+            90% { opacity: 0.8; }
+            100% { 
+                transform: translateY(-10vh) rotate(360deg) scale(0.3); 
+                opacity: 0; 
+            }
+        }
+
+        /* Enhanced iPhone Responsiveness */
+        @media (max-width: 768px) {
+            .message, .intro-message { 
+                font-size: 22px; 
+                padding: 0 15px;
+                max-width: 90%;
+            }
+            
+            .intro-message {
+                font-size: 28px;
+            }
+            
+            .intro-subtext {
+                font-size: 16px;
+            }
+            
+            .letter-container { 
+                padding: 35px 25px; 
+                font-size: 16px;
+                margin: 15px;
+                max-height: 80vh;
+            }
+            
+            .birthday-title { 
+                font-size: clamp(2.5rem, 9vw, 5rem);
+                margin-bottom: 20px;
+            }
+            
+            .birthday-subtitle {
+                font-size: 18px;
+                margin-bottom: 35px;
+                padding: 0 20px;
+            }
+            
+            .letter-invitation {
+                padding: 16px 32px;
+                font-size: 16px;
+            }
+            
+            .heartbeat-indicator {
+                top: 40px;
+            }
+            
+            .heart-dot {
+                width: 6px;
+                height: 6px;
+            }
+            
+            .touch-invitation {
+                bottom: 60px;
+                font-size: 14px;
+            }
+            
+            .number-indicator {
+                top: 100px;
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 414px) {
+            .message, .intro-message { 
+                font-size: 20px; 
+                padding: 0 12px;
+            }
+            
+            .intro-message {
+                font-size: 24px;
+            }
+            
+            .intro-subtext {
+                font-size: 14px;
+            }
+            
+            .letter-container { 
+                padding: 30px 20px; 
+                font-size: 15px;
+                margin: 10px;
+            }
+            
+            .birthday-title { 
+                font-size: clamp(2rem, 8vw, 4rem);
+            }
+            
+            .birthday-subtitle {
+                font-size: 16px;
+                padding: 0 15px;
+            }
+            
+            .letter-invitation {
+                padding: 14px 28px;
+                font-size: 15px;
+            }
+            
+            .letter-line {
+                margin-bottom: 24px;
+            }
+            
+            .message::before,
+            .message::after {
+                font-size: 40px;
+            }
+            
+            .message::before {
+                top: -15px;
+                left: -5px;
+            }
+            
+            .message::after {
+                bottom: -20px;
+                right: -5px;
+            }
+            
+            .number-indicator {
+                top: 90px;
+                font-size: 14px;
+            }
+        }
+
+        /* iPhone X and newer safe areas */
+        @media (max-width: 414px) and (min-height: 812px) {
+            .page {
+                padding: env(safe-area-inset-top, 20px) env(safe-area-inset-right, 20px) env(safe-area-inset-bottom, 20px) env(safe-area-inset-left, 20px);
+            }
+            
+            .heartbeat-indicator {
+                top: calc(env(safe-area-inset-top, 20px) + 30px);
+            }
+            
+            .touch-invitation {
+                bottom: calc(env(safe-area-inset-bottom, 20px) + 50px);
+            }
+        }
+
+        .letter-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .letter-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #8b4a6b, #c67b9b);
+            border-radius: 3px;
+        }
+
+        .letter-container::-webkit-scrollbar-track {
+            background: rgba(139, 74, 107, 0.1);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Heartbeat Progress -->
+    <div class="heartbeat-indicator" id="heartbeat">
+        <div class="heart-dot active"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+        <div class="heart-dot"></div>
+    </div>
+
+    <!-- Intro Page -->
+    <div class="page active" id="page0">
+        <div class="intro-message">28 things I like about you</div>
+        <div class="intro-subtext">for your 28th birthday 🥺<br>(I'm not okay honestly)</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <!-- 28 Individual Pages -->
+    <div class="page" id="page1">
+        <div class="number-indicator">1</div>
+        <div class="message">You love God. Deeply. Consistently. You're actually one of the most God-fearing people I know.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page2">
+        <div class="number-indicator">2</div>
+        <div class="message">You serve God and people with so much humility. It's crazy.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page3">
+        <div class="number-indicator">3</div>
+        <div class="message">You're sooo gentle with me. I've never felt so safe with someone.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page4">
+        <div class="number-indicator">4</div>
+        <div class="message">You're kind in the most quiet but heavy ways.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page5">
+        <div class="number-indicator">5</div>
+        <div class="message">You're tall 😭 I have to stretch my neck and I love it.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page6">
+        <div class="number-indicator">6</div>
+        <div class="message">You're dark and handsome. Let me rest please 😭</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page7">
+        <div class="number-indicator">7</div>
+        <div class="message">You're a giver. Not just money — time, effort, attention. Everything.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page8">
+        <div class="number-indicator">8</div>
+        <div class="message">You're sweet. Like too sweet sometimes. I don't even know how to respond.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page9">
+        <div class="number-indicator">9</div>
+        <div class="message">You make me feel seen, chosen, loved, valued. All of it.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page10">
+        <div class="number-indicator">10</div>
+        <div class="message">You're intentional. You don't just do things anyhow.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page11">
+        <div class="number-indicator">11</div>
+        <div class="message">You listen. Like really listen. Even when I'm not saying much.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page12">
+        <div class="number-indicator">12</div>
+        <div class="message">You're calm. Too calm sometimes 😭 but it balances out my head.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page13">
+        <div class="number-indicator">13</div>
+        <div class="message">You actually like me 😭 and that alone is still shocking.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page14">
+        <div class="number-indicator">14</div>
+        <div class="message">You're respectful. Always. It shows in the way you talk, act, everything.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page15">
+        <div class="number-indicator">15</div>
+        <div class="message">You're responsible — and I love the way you carry yourself.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page16">
+        <div class="number-indicator">16</div>
+        <div class="message">You love well. Like in a way that feels structured and real.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page17">
+        <div class="number-indicator">17</div>
+        <div class="message">You prioritize me. Even in the small things. Especially in the small things.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page18">
+        <div class="number-indicator">18</div>
+        <div class="message">You've never made me feel unsure about where I stand with you. Not even once.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page19">
+        <div class="number-indicator">19</div>
+        <div class="message">You call me baby and my love and act like I'm not blushing hard.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page20">
+        <div class="number-indicator">20</div>
+        <div class="message">You show up. You don't disappear. You don't hide. You're just… there.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page21">
+        <div class="number-indicator">21</div>
+        <div class="message">You're patient with me. And Lord knows I needed that.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page22">
+        <div class="number-indicator">22</div>
+        <div class="message">You speak softly. Even when I'm doing gra gra 😭</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page23">
+        <div class="number-indicator">23</div>
+        <div class="message">You pray. I love that you pray. That thing touches me.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page24">
+        <div class="number-indicator">24</div>
+        <div class="message">You're honest. You don't make me decode anything.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page25">
+        <div class="number-indicator">25</div>
+        <div class="message">You bring peace. Sometimes I don't even realise I needed it till you give it.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page26">
+        <div class="number-indicator">26</div>
+        <div class="message">You make me laugh like a fool 😭 and smile like I've lost it.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page27">
+        <div class="number-indicator">27</div>
+        <div class="message">You notice little things I don't even say out loud.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <div class="page" id="page28">
+        <div class="number-indicator">28</div>
+        <div class="message">You just feel like home. And I've never said that about anyone before.</div>
+        <div class="touch-invitation" onclick="nextPage()">touch anywhere to continue</div>
+    </div>
+
+    <!-- Birthday Celebration Page -->
+    <div class="page birthday-page" id="page29">
+        <div class="birthday-title">HAPPY BIRTHDAY!</div>
+        <div class="birthday-subtitle">Today is about celebrating you... 💕</div>
+        <button class="letter-invitation" onclick="nextPage()">Read your special message</button>
+    </div>
+
+    <!-- Long Message Page -->
+    <div class="page" id="page30">
+        <div class="letter-container">
+            <div class="letter-line greeting">Hey Boo 🤍</div>
+            
+            <div class="letter-line">Happy birthday baby 🥺🎈</div>
+            
+            <div class="letter-line">I've been holding this in for a while. Not because I was scared, but because I was waiting for the right moment. I wanted it to feel intentional. I wanted to be sure of how I felt. And honestly… I've been sure for a while now.</div>
+            
+            <div class="letter-line">You've made it so easy to like you. So, so easy. The way you care. The way you check in. The way you show up without ever asking for anything in return. The way you give peace — quietly, softly — just by being yourself. <span class="emotional-text">You've made me feel safe in a way I didn't know I needed</span> 🤍</div>
+            
+            <div class="letter-line">You've been patient with me. Gentle. Always kind. You never rushed me. You didn't push. You just kept being you — consistent, thoughtful, intentional. And I noticed every single thing. Every word. Every moment. Every time you waited for me to get there on my own.</div>
+            
+            <div class="letter-line">And now I'm here… <span class="emotional-text">with my chest full</span> 🥺 Knowing I really, really like you.</div>
+            
+            <div class="letter-line">I remember when you'd call me baby and my love and I'd just laugh or say "hmm hmm" 😭 but you had no idea what it was doing to me (I think <span class="emotional-text">my heart was melting😂</span>). I loved hearing it. I just didn't know how to respond yet. I was keeping it close. Waiting to give it back properly. Like now.</div>
+            
+            <div class="letter-line">You once asked me how much I liked you. The first time, I said 4 😭 Then I said 7 — not because I didn't feel more, but because I felt like you liked me more than I liked you, and I didn't want to do too much. But the truth? <span class="emotional-text">It's always been more. Way more.</span> I just didn't know how to show it then.</div>
+            
+            <div class="letter-line">This isn't just a little crush. This is care. This is softness. This is comfort. <span class="emotional-text">This is the kind of peace that feels like home.</span> And it's all because of you 🤍</div>
+            
+            <div class="letter-line">I know we don't have all the answers about the future. And that's okay. But I know how I feel. And I want this. <span class="emotional-text">I want to try. Slowly. Gently. Fully. With you</span> 💛</div>
+            
+            <div class="letter-line">So yes. <span class="emotional-text">Yes to the question you've asked me before.</span> Yes to your pet names, your "baby", your "my love". Yes to the check-ins, the calls, the "have you eaten?", the "are you okay?" <span class="emotional-text">Yes to being yours… even if I'm still a little shy saying it out loud</span> 😅 Yes to all of it 🫶🏽</div>
+            
+            <div class="letter-line">You've shown me that love doesn't have to be loud or heavy. Sometimes, it's just a calm feeling in your chest… and a smile you don't even realize is there.</div>
+            
+            <div class="letter-line">Thank you for being you. Thank you for being gentle with my heart. <span class="emotional-text">Thank you for waiting for me to get here</span> 🥺</div>
+            
+            <div class="letter-line">I'm so, so glad it's you. Happy birthday, love 🤍🎉 You truly deserve the sweetest kind of love — and I hope today reminds you of just how much you're loved… <span class="emotional-text">especially by me.</span></div>
+            
+            <div class="letter-line signature">– Mofe 💌</div>
+        </div>
+        <div class="touch-invitation" onclick="restartExperience()">Read again from beginning</div>
+    </div>
+
+    <!-- Floating Hearts Background -->
+    <div class="floating-hearts" id="floatingHearts"></div>
+
+    <script>
+        // Global variables
+        let currentPage = 0;
+        const totalPages = 31; // 0-30 inclusive
+        let touchStartY = 0;
+        const heartbeat = document.getElementById('heartbeat');
+        const floatingHearts = document.getElementById('floatingHearts');
+
+        // Create floating hearts (reduced quantity)
+        function createHearts() {
+            const heartCount = 20; // Reduced from 50 to 20
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤';
+                heart.classList.add('floating-heart');
+                
+                // Random properties
+                const left = Math.random() * 100;
+                const delay = Math.random() * 15;
+                const duration = 10 + Math.random() * 20;
+                const size = 0.3 + Math.random() * 0.7;
+                
+                heart.style.left = `${left}%`;
+                heart.style.animationDelay = `${delay}s`;
+                heart.style.animationDuration = `${duration}s`;
+                heart.style.fontSize = `${size}rem`;
+                heart.style.opacity = 0.1 + Math.random() * 0.3;
+                
+                floatingHearts.appendChild(heart);
+            }
+        }
+
+        // Update heartbeat indicator
+        function updateHeartbeat() {
+            const dots = heartbeat.querySelectorAll('.heart-dot');
+            const activeIndex = Math.floor((currentPage / (totalPages - 1)) * (dots.length - 1));
+            
+            dots.forEach((dot, index) => {
+                if (index <= activeIndex) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        // Navigate to next page
+        function nextPage() {
+            if (currentPage < totalPages - 1) {
+                document.getElementById(`page${currentPage}`).classList.remove('active');
+                currentPage++;
+                document.getElementById(`page${currentPage}`).classList.add('active');
+                updateHeartbeat();
+                
+                // Special handling for letter page
+                if (currentPage === 30) {
+                    animateLetter();
+                }
+            }
+        }
+
+        // Animate letter line by line
+        function animateLetter() {
+            const letterLines = document.querySelectorAll('.letter-line');
+            letterLines.forEach((line, index) => {
+                setTimeout(() => {
+                    line.classList.add('visible');
+                }, 500 * index);
+            });
+        }
+
+        // Restart the experience
+        function restartExperience() {
+            document.getElementById(`page${currentPage}`).classList.remove('active');
+            currentPage = 0;
+            document.getElementById('page0').classList.add('active');
+            updateHeartbeat();
+        }
+
+        // Swipe detection for mobile
+        document.body.addEventListener('touchstart', e => {
+            touchStartY = e.changedTouches[0].screenY;
+        }, false);
+
+        document.body.addEventListener('touchend', e => {
+            const touchEndY = e.changedTouches[0].screenY;
+            const diffY = touchStartY - touchEndY;
+            
+            // Swipe up to advance
+            if (diffY > 50) {
+                nextPage();
+            }
+        }, false);
+
+        // Click/tap anywhere to advance
+        document.body.addEventListener('click', (e) => {
+            if (!e.target.matches('.letter-invitation')) {
+                nextPage();
+            }
+        });
+
+        // Initialize
+        window.onload = function() {
+            createHearts();
+            updateHeartbeat();
+        };
+    </script>
+</body>
+</html>
